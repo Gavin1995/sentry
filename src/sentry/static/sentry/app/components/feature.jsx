@@ -137,6 +137,12 @@ class Feature extends React.Component {
       return children(renderProps);
     }
 
+    if (!hasFeature && !renderNoFeatureMessage) {
+      return DEFAULT_NO_FEATURE_MESSAGE;
+    } else if (!hasFeature && typeof renderNoFeatureMessage === 'function') {
+      return renderNoFeatureMessage();
+    }
+
     // if children is NOT a function,
     // then only render `children` iff `features` and `access` passes
     if (hasFeature && hasAccess && hasSuperuser) {

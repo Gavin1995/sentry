@@ -208,6 +208,7 @@ theme.button = {
 };
 
 theme.charts = {
+  // colors: ['#ada4b6', '#928a9b', theme.purpleDark, theme.purple2],
   colors: ['#4C416B', '#7A5195', '#BC5090', '#EF5675', '#FF764A', '#FFA600'],
   previousPeriod: theme.gray1,
 };

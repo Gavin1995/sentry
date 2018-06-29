@@ -9,7 +9,7 @@ import Button from 'app/components/buttons/button';
 import MultiSelectField from 'app/components/forms/multiSelectField';
 import {t} from 'app/locale';
 
-class MultipleProjectSelector extends React.Component {
+class MultipleProjectSelector extends React.PureComponent {
   static propTypes = {
     value: PropTypes.array,
     projects: PropTypes.array,
