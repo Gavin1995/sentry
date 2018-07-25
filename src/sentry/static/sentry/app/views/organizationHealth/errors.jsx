@@ -122,7 +122,11 @@ const OrganizationHealthErrors = styled(
                       getValue={item =>
                         typeof item === 'number' ? item : item && item.count}
                       renderHeaderCell={({getValue, value, columnIndex}) => {
-                        return typeof value === 'string' ? value : value.user.id;
+                        return typeof value === 'string' ? (
+                          value
+                        ) : (
+                          <IdBadge user={value.user} />
+                        );
                       }}
                       renderDataCell={({getValue, value, columnIndex}) => {
                         return <Count value={getValue(value)} />;
