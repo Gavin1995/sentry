@@ -1,4 +1,5 @@
 import {Box, Flex} from 'grid-emotion';
+import {flatten} from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import moment from 'moment';
@@ -72,7 +73,7 @@ const OrganizationHealthErrors = styled(
               <AreaChart />
             </StyledPanelChart>
 
-            <HealthRequest tag="user" timeseries={true}>
+            <HealthRequest tag="release" timeseries={true}>
               {({data, loading}) => (
                 <StyledPanelChart
                   height={200}
@@ -173,7 +174,7 @@ const OrganizationHealthErrors = styled(
                         shadeRowPercentage
                       />
                       <StyledPanelChart
-                        height={200}
+                        height={300}
                         title={t('Errors By Release')}
                         showLegend={false}
                         data={data.map(row => ({
@@ -192,6 +193,7 @@ const OrganizationHealthErrors = styled(
                           </LegendWrapper>
                           <PieChartWrapper>
                             <PieChart
+                              height={300}
                               data={data.map(row => ({
                                 name: row.release.version,
                                 value: row.count,
@@ -204,6 +206,44 @@ const OrganizationHealthErrors = styled(
                   )}
                 </React.Fragment>
               )}
+            </HealthRequest>
+          </Flex>
+
+          <Flex>
+            <HealthRequest tag="release" timeseries={true}>
+              {({data, loading}) => {
+                console.log(data);
+                // fetch all releases through entire data set
+                const releases = flatten(
+                  data.map(([_timestamp, counts]) => counts.map(({release}) => release))
+                );
+                console.log(releases);
+                return (
+                  <StyledPanelChart
+                    height={200}
+                    startDate={START_DATE}
+                    title={t('Users')}
+                    series={[
+                      {
+                        name: 'User Session',
+                        data: GIVE_DATA(TMPSIZE),
+                      },
+                      {
+                        name: 'Affected',
+                        data: GIVE_DATA(TMPSIZE),
+                      },
+                    ]}
+                    lines={[
+                      {
+                        name: 'Previous Period',
+                        data: GIVE_DATA(TMPSIZE),
+                      },
+                    ]}
+                  >
+                    <AreaChart />
+                  </StyledPanelChart>
+                );
+              }}
             </HealthRequest>
           </Flex>
         </div>

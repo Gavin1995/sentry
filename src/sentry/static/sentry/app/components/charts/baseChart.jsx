@@ -57,8 +57,8 @@ class BaseChart extends React.Component {
   };
 
   static defaultProps = {
-    height: null,
-    width: null,
+    height: undefined,
+    width: undefined,
     renderer: 'svg',
     notMerge: false,
     lazyUpdate: false,
