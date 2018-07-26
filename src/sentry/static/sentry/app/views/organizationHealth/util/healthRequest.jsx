@@ -23,7 +23,7 @@ class HealthRequestWithParams extends React.Component {
     /**
      * List of project ids to query
      */
-    projects: PropTypes.arrayOf(PropTypes.number),
+    projects: PropTypes.arrayOf(PropTypes.string),
 
     /**
      * List of environments to query
