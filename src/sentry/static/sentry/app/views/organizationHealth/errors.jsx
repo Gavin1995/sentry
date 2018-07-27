@@ -70,7 +70,7 @@ const OrganizationHealthErrors = styled(
                 },
               ]}
             >
-              <AreaChart />
+              {props => <AreaChart {...props} />}
             </StyledPanelChart>
 
             <HealthRequest tag="release" timeseries={true}>
@@ -96,7 +96,7 @@ const OrganizationHealthErrors = styled(
                     },
                   ]}
                 >
-                  <AreaChart />
+                  {props => <AreaChart {...props} />}
                 </StyledPanelChart>
               )}
             </HealthRequest>
@@ -182,25 +182,16 @@ const OrganizationHealthErrors = styled(
                           value: row.count,
                         }))}
                       >
-                        <Flex>
-                          <LegendWrapper>
-                            <Legend
-                              data={data.map(row => ({
-                                name: row.release.version,
-                                value: row.count,
-                              }))}
-                            />
-                          </LegendWrapper>
-                          <PieChartWrapper>
-                            <PieChart
-                              height={300}
-                              data={data.map(row => ({
-                                name: row.release.version,
-                                value: row.count,
-                              }))}
-                            />
-                          </PieChartWrapper>
-                        </Flex>
+                        {({data: panelData}) => (
+                          <Flex>
+                            <LegendWrapper>
+                              <Legend data={panelData} />
+                            </LegendWrapper>
+                            <PieChartWrapper>
+                              <PieChart height={300} data={panelData} />
+                            </PieChartWrapper>
+                          </Flex>
+                        )}
                       </StyledPanelChart>
                     </React.Fragment>
                   )}
@@ -212,36 +203,27 @@ const OrganizationHealthErrors = styled(
           <Flex>
             <HealthRequest tag="browser.name" timeseries={false}>
               {({data, loading}) => {
-                console.log(data);
                 if (!data) return null;
-                // fetch all releases through entire data set
-                const releases = flatten(
-                  data.map(([_timestamp, counts]) => counts.map(({release}) => release))
-                );
-                console.log(releases);
                 return (
                   <StyledPanelChart
                     height={200}
                     startDate={START_DATE}
-                    title={t('Users')}
-                    series={[
-                      {
-                        name: 'User Session',
-                        data: GIVE_DATA(TMPSIZE),
-                      },
-                      {
-                        name: 'Affected',
-                        data: GIVE_DATA(TMPSIZE),
-                      },
-                    ]}
-                    lines={[
-                      {
-                        name: 'Previous Period',
-                        data: GIVE_DATA(TMPSIZE),
-                      },
-                    ]}
+                    data={data.map(dataObj => ({
+                      name: dataObj['browser.name'],
+                      value: dataObj.count,
+                    }))}
+                    title={t('Browsers')}
                   >
-                    <AreaChart />
+                    {({data: panelData}) => (
+                      <Flex>
+                        <LegendWrapper>
+                          <Legend data={panelData} />
+                        </LegendWrapper>
+                        <PieChartWrapper>
+                          <PieChart height={300} data={panelData} />
+                        </PieChartWrapper>
+                      </Flex>
+                    )}
                   </StyledPanelChart>
                 );
               }}
