@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import moment from 'moment';
 
 import theme from 'app/utils/theme';
 
@@ -13,32 +12,27 @@ import LineSeries from '../../components/charts/series/lineSeries';
 export default class lineChart extends React.Component {
   static propTypes = {
     chartData: PropTypes.object,
-    data: PropTypes.object,
+    dates: PropTypes.array,
   };
 
   defineSeries = ([key, value], idx) => {
     return LineSeries({
       name: key,
       type: 'line',
-      data: value.aggregate,
+      data: value,
       // data: value.map(entry => entry.count),
       color: theme.charts.colors[idx],
     });
   };
 
   render() {
-    const {chartData, data, ...props} = this.props;
+    const {chartData, dates, ...props} = this.props;
 
     // const series = Object.entries(this.getLineSeries(data.data, groupBy)).map(this.defineSeries);
     const series = Object.entries(chartData).map(this.defineSeries);
 
-    const dates = [
-      ...new Set(data.data.map(entry => moment(entry.time * 1000).format('MM-DD'))),
-    ];
-
     console.log('dates', dates);
     console.log('series', series);
-    console.log('data: ', data);
 
     if (
       !series.length ||

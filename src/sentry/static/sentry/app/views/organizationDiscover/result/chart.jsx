@@ -31,17 +31,35 @@ export default class Result extends React.Component {
     const {aggregations} = this.props.query;
     const aggregate = aggregations[0][2];
 
+    const rawDates = [...new Set(queryData.map(entry => entry.time))];
+
+    const formattedDates = rawDates.map(time => moment(time * 1000).format('MM-DD'));
+
     const output = {};
     queryData.forEach(data => {
       const key = groupbyFields.map(field => this.getLabel(data[field])).join(',');
-      if (key in output) {
-        output[key].aggregate.push(data[aggregate]);
-        output[key].time.push(data.time);
-      } else {
-        output[key] = {aggregate: [data[aggregate]], time: [data.time]};
+      const val = this.getLabel(data[aggregate]);
+      const idx = rawDates.indexOf(data.time);
+
+      if (!(key in output)) {
+        output[key] = {};
       }
+      output[key][idx] = val;
     });
-    return output;
+
+    // If there is no data for that series in that time period, fill it with null
+    const data = {};
+    Object.entries(output).forEach(([line, val]) => {
+      data[line] = new Array(rawDates.length).fill(null);
+      Object.entries(val).forEach(([idx, count]) => {
+        data[line][idx] = count;
+      });
+    });
+
+    return {
+      chartData: data,
+      dates: formattedDates,
+    };
   }
 
   getBarDataForChart(queryData, groupbyFields) {
@@ -79,14 +97,13 @@ export default class Result extends React.Component {
     console.log('ChartData: ', this.getDataForChart(data, fields));
     console.log('Fields:', fields);
 
-    const chartData = this.getDataForChart(data, fields);
+    const {chartData, dates} = this.getDataForChart(data, fields);
 
     const barData = this.getBarDataForChart(data, fields);
     console.log('bar data', barData);
     return (
       <div>
-        {/*{`data for charts: ${JSON.stringify(this.props.data)}`}*/}
-        <LineChart data={this.props.data} chartData={chartData} style={{height: 200}} />
+        <LineChart dates={dates} chartData={chartData} style={{height: 200}} />
         <BarChart series={barData} stacked={true} style={{height: 400}} />
       </div>
     );
