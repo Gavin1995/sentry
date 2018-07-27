@@ -9,6 +9,7 @@ import {TableChart} from 'app/components/charts/tableChart';
 import {t} from 'app/locale';
 import AreaChart from 'app/components/charts/areaChart';
 import Count from 'app/components/count';
+import PercentageBarChart from 'app/components/charts/percentageBarChart';
 import IdBadge from 'app/components/idBadge';
 import PanelChart from 'app/components/charts/panelChart';
 import PieChart from 'app/components/charts/pieChart';
@@ -55,17 +56,17 @@ const OrganizationHealthErrors = styled(
               title={t('Errors')}
               series={[
                 {
-                  name: 'Crash',
+                  seriesName: 'Crash',
                   data: GIVE_DATA(TMPSIZE),
                 },
                 {
-                  name: 'Handled',
+                  seriesName: 'Handled',
                   data: GIVE_DATA(TMPSIZE),
                 },
               ]}
               lines={[
                 {
-                  name: 'Previous Period',
+                  seriesName: 'Previous Period',
                   data: GIVE_DATA(TMPSIZE),
                 },
               ]}
@@ -73,32 +74,63 @@ const OrganizationHealthErrors = styled(
               {props => <AreaChart {...props} />}
             </StyledPanelChart>
 
-            <HealthRequest tag="release" timeseries={true}>
-              {({data, loading}) => (
-                <StyledPanelChart
-                  height={200}
-                  startDate={START_DATE}
-                  title={t('Users')}
-                  series={[
-                    {
-                      name: 'User Session',
-                      data: GIVE_DATA(TMPSIZE),
-                    },
-                    {
-                      name: 'Affected',
-                      data: GIVE_DATA(TMPSIZE),
-                    },
-                  ]}
-                  lines={[
-                    {
-                      name: 'Previous Period',
-                      data: GIVE_DATA(TMPSIZE),
-                    },
-                  ]}
-                >
-                  {props => <AreaChart {...props} />}
-                </StyledPanelChart>
-              )}
+            <HealthRequest tag="release" timeseries={true} interval="1d">
+              {({data, loading}) => {
+                if (!data) return null;
+                const releaseMap = new Map();
+                const timestampMap = new Map();
+                data.forEach(([timestamp, resultsForTimestamp]) => {
+                  const total = resultsForTimestamp.reduce(
+                    (sum, {count}) => sum + count,
+                    0
+                  );
+
+                  if (!resultsForTimestamp.length) {
+                    return;
+                  }
+
+                  resultsForTimestamp.forEach(({count, release}) => {
+                    if (!releaseMap.has(release.shortVersion)) {
+                      releaseMap.set(release.shortVersion, []);
+                    }
+
+                    let arr = releaseMap.get(release.shortVersion);
+                    let value = Math.round(count / total * 10000) / 100;
+                    let valueObj = {
+                      value,
+                      category: moment(timestamp * 1000).format('MMM D'),
+                    };
+
+                    timestampMap.set(`${timestamp}-${release.shortVersion}`, value);
+                    arr.push(valueObj);
+                  });
+                });
+
+                const releases = Array.from(releaseMap.keys());
+
+                const seriesByRelease = releases.map(release => {
+                  return {
+                    seriesName: release,
+                    data: data.map(([timestamp]) => {
+                      return {
+                        category: moment(timestamp * 1000).format('MMM D'),
+                        value: timestampMap.get(`${timestamp}-${release}`) || 0,
+                      };
+                    }),
+                  };
+                });
+
+                return (
+                  <StyledPanelChart
+                    height={200}
+                    startDate={START_DATE}
+                    title={t('Releases')}
+                    series={seriesByRelease}
+                  >
+                    {props => <PercentageBarChart {...props} />}
+                  </StyledPanelChart>
+                );
+              }}
             </HealthRequest>
           </Flex>
 

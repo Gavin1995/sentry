@@ -12,7 +12,7 @@ const Legend = styled(
     static propTypes = {
       series: PropTypes.arrayOf(
         PropTypes.shape({
-          name: PropTypes.string,
+          seriesName: PropTypes.string,
           data: PropTypes.arrayOf(PropTypes.number),
         })
       ),
@@ -41,9 +41,9 @@ const Legend = styled(
           {series &&
             series.map((serie, i) => {
               return (
-                <SeriesGroup key={serie.name}>
+                <SeriesGroup key={serie.seriesName}>
                   <CircleIndicator color={theme.charts.colors[i]} />
-                  <SeriesName>{serie.name}</SeriesName>
+                  <SeriesName>{serie.seriesName}</SeriesName>
                 </SeriesGroup>
               );
             })}
