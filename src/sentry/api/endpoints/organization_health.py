@@ -2,11 +2,10 @@ from __future__ import absolute_import
 
 import re
 from collections import namedtuple
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
-from django.utils import timezone
 
 from sentry.api.bases import OrganizationEndpoint, EnvironmentMixin
 from sentry.api.exceptions import ResourceDoesNotExist
@@ -141,7 +140,7 @@ class OrganizationHealthTopEndpoint(OrganizationHealthEndpointBase):
         # snuba groupby can't be a tuple
         groupby = list(tagkey)
 
-        now = timezone.now()
+        now = datetime.utcnow()
 
         data = query(
             end=now,
@@ -215,7 +214,7 @@ class OrganizationHealthGraphEndpoint(OrganizationHealthEndpointBase):
 
         environment = self.get_environment(request, organization)
 
-        now = timezone.now()
+        now = datetime.utcnow()
 
         data = query(
             end=now,
@@ -262,7 +261,7 @@ class OrganizationHealthGraph2Endpoint(OrganizationHealthEndpointBase):
 
         environment = self.get_environment(request, organization)
 
-        end = timezone.now()
+        end = datetime.utcnow()
         start = end - stats_period
         rollup = int(interval.total_seconds())
 
