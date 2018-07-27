@@ -183,8 +183,8 @@ export const Project = PropTypes.shape({
   // This is a number if returned from snubas :/
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   slug: PropTypes.string.isRequired,
-  isBookmarked: PropTypes.bool.isRequired,
-  teams: PropTypes.arrayOf(Team).isRequired,
+  isBookmarked: PropTypes.bool,
+  teams: PropTypes.arrayOf(Team),
   name: PropTypes.string,
   status: PropTypes.string,
 });
