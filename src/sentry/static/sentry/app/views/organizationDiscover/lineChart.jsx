@@ -63,6 +63,7 @@ export default class lineChart extends React.Component {
           xAxis: XAxis({
             type: 'category',
             data: dates,
+            boundaryGap: false,
           }),
           yAxis: YAxis({}),
           series,
