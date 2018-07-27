@@ -38,6 +38,13 @@ class HealthRequestWithParams extends React.Component {
     period: PropTypes.string,
 
     /**
+     * Interval to group results in
+     *
+     * e.g. 1d, 1h, 1m, 1s
+     */
+    interval: PropTypes.string,
+
+    /**
      * Include data for previous period
      */
     includePrevious: PropTypes.bool,
@@ -57,6 +64,7 @@ class HealthRequestWithParams extends React.Component {
     period: '7d',
     includePrevious: true,
     timeseries: true,
+    interval: '1d',
   };
 
   constructor(props) {
