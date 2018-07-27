@@ -48,6 +48,7 @@ class AccountSecurity extends AsyncView {
       onDisable,
     } = this.props;
     let isEmpty = !authenticators.length;
+    let orgInvite = Cookies.get('invite');
 
     return (
       <div>

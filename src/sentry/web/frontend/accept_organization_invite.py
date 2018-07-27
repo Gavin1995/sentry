@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.utils.crypto import constant_time_compare
 from django.utils.translation import ugettext_lazy as _
 
-from sentry.models import AuditLogEntryEvent, OrganizationMember, Project
+from sentry.models import AuditLogEntryEvent, Authenticator, OrganizationMember, Project
 from sentry.signals import member_joined
 from sentry.utils import auth
 from sentry.web.frontend.base import BaseView
@@ -65,11 +65,15 @@ class AcceptOrganizationInviteView(BaseView):
         project_list = list(qs[:25])
         project_count = qs.count()
 
+        org_requires_2fa = om.organization.flags.require_2fa
+        user_has_2fa = Authenticator.objects.user_has_2fa(request.user.id)
+
         context = {
-            'organization': om.organization,
+            'org_name': om.organization.name,
             'project_list': project_list,
             'project_count': project_count,
             'needs_authentication': not request.user.is_authenticated(),
+            'needs_2fa': org_requires_2fa and not user_has_2fa,
             'logout_url': '{}?next={}'.format(
                 reverse('sentry-logout'),
                 request.path,
@@ -85,7 +89,7 @@ class AcceptOrganizationInviteView(BaseView):
         }
 
         if not request.user.is_authenticated():
-            # Show login or register form
+                # Show login or register form
             auth.initiate_login(request, next_url=request.get_full_path())
             request.session['can_register'] = True
             request.session['invite_email'] = om.email
