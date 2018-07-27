@@ -1,5 +1,4 @@
 import {Box, Flex} from 'grid-emotion';
-import {flatten} from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import moment from 'moment';
@@ -158,7 +157,7 @@ const OrganizationHealthErrors = styled(
                         return typeof value === 'string' ? (
                           value
                         ) : (
-                          <IdBadge user={value.user} />
+                          <IdBadge user={value.user} displayName={value.label} />
                         );
                       }}
                       renderDataCell={({getValue, value, columnIndex}) => {
