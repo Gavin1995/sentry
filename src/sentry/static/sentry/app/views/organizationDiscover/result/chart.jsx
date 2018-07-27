@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import LineChart from '../lineChart';
+// import BarChart from 'app/components/charts/barChart.jsx';
 
 export default class Result extends React.Component {
   static propTypes = {
@@ -33,8 +34,9 @@ export default class Result extends React.Component {
       const key = groupbyFields.map(field => this.getLabel(data[field])).join(',');
       if (key in output) {
         output[key].aggregate.push(data[aggregate]);
+        output[key].time.push(data.time);
       } else {
-        output[key] = {aggregate: [data[aggregate]]};
+        output[key] = {aggregate: [data[aggregate]], time: [data.time]};
       }
     });
     return output;
@@ -45,7 +47,7 @@ export default class Result extends React.Component {
     const {data} = this.props.data;
 
     console.log('data is: ', data);
-    console.log('parsed data is: ', this.getDataForChart(data, fields));
+    console.log('ChartData: ', this.getDataForChart(data, fields));
     console.log('Fields:', fields);
 
     const chartData = this.getDataForChart(data, fields);

@@ -37,7 +37,6 @@ export default class lineChart extends React.Component {
     ];
 
     console.log('dates', dates);
-    console.log('received chartdata', chartData);
     console.log('series', series);
     console.log('data: ', data);
 
