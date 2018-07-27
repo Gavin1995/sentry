@@ -210,9 +210,10 @@ const OrganizationHealthErrors = styled(
           </Flex>
 
           <Flex>
-            <HealthRequest tag="release" timeseries={true}>
+            <HealthRequest tag="browser.name" timeseries={false}>
               {({data, loading}) => {
                 console.log(data);
+                if (!data) return null;
                 // fetch all releases through entire data set
                 const releases = flatten(
                   data.map(([_timestamp, counts]) => counts.map(({release}) => release))
